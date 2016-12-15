@@ -1,0 +1,8 @@
+applications:
+- cadf
+classes:
+- service.cadf.support
+parameters:
+  cadf:
+    listener:
+      enabled: true

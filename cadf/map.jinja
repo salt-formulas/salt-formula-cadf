@@ -1,0 +1,47 @@
+
+{%- load_yaml as config %}
+config:
+  user: root
+  group: root
+  config_dir:
+    /usr/local/share/cadf
+  pkgs:
+    - python-oslo.messaging
+{%- endload %}
+
+{%- load_yaml as dispatcher %}
+dispatcher:
+  enabled: True
+  user: root
+  group: root
+  cron:
+    hour: '*'
+    minute: '*/1'
+  messaging:
+    host: 127.0.0.1
+    port: 5672
+    user: admin
+    password: adminpassword
+    queue: /openstack
+  target:
+    topic: notifications
+  http_server:
+    url: 127.0.0.1.24:33333
+  pkgs:
+    - python-oslo.messaging
+{%- endload %}
+
+{%- load_yaml as listener_defaults %}
+listener:
+  enabled: False
+  user: root
+  group: root
+  pkgs:
+    - python-oslo.messaging
+{%- endload %}
+
+
+{%- set config = salt['grains.filter_by'](config, merge=salt['pillar.get']('cadf:config'), base='config') %}
+{%- set dispatcher = salt['grains.filter_by'](dispatcher, merge=salt['pillar.get']('cadf:dispatcher'), base='dispatcher') %}
+{%- set listener = salt['grains.filter_by'](listener_defaults, merge=salt['pillar.get']('cadf:listener'), base='listener') %}
+
