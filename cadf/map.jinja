@@ -22,11 +22,11 @@ dispatcher:
     port: 5672
     user: admin
     password: adminpassword
-    queue: /openstack
-  target:
+    queue: notifications.info
+    vhost: /openstack
     topic: notifications
   http_server:
-    url: 127.0.0.1.24:33333
+    url: 127.0.0.1:33333
   pkgs:
     - python-oslo.messaging
 {%- endload %}

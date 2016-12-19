@@ -14,8 +14,8 @@ cadf:
       port: 5672
       user: test
       password: password
-      queue: /openstack
-    target:
+      vhost: /openstack
+      queue: notifications.info
       topic: notifications
     http_server:
       url: 192.168.1.24:33333

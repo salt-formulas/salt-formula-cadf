@@ -24,7 +24,7 @@
 
 dispatcher_cron:
   cron.present:
-    - name: "python {{ config.config_dir }}/cadf_dispatcher.py"
+    - name: "python {{ config.config_dir }}/cadf_dispatcher.py {{ config.config_dir }}/cadf_dispatcher.conf >> /var/log/cadf/distpatcher.log 2>> /var/log/cadf/distpatcher.err"
     - identifier: cadf_dispatcher
     - hour: "{{ dispatcher.cron.hour  }}"
     - minute: "{{ dispatcher.cron.minute  }}"
