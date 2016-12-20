@@ -10,6 +10,8 @@
     - mode: 644
     - user: {{ config.get('user','root') }}
     - group: {{ config.get('group','root') }}
+    - require:
+        - file : {{ config.config_dir }}
 
 {{ config.config_dir }}/cadf_dispatcher.conf:
   file.managed:
@@ -24,7 +26,7 @@
 
 dispatcher_cron:
   cron.present:
-    - name: "python {{ config.config_dir }}/cadf_dispatcher.py {{ config.config_dir }}/cadf_dispatcher.conf >> /var/log/cadf/distpatcher.log 2>> /var/log/cadf/distpatcher.err"
+    - name: "python {{ config.config_dir }}/cadf_dispatcher.py {{ config.config_dir }}/cadf_dispatcher.conf"
     - identifier: cadf_dispatcher
     - hour: "{{ dispatcher.cron.hour  }}"
     - minute: "{{ dispatcher.cron.minute  }}"

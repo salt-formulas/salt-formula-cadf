@@ -13,15 +13,17 @@ cadf_packages:
 
 {{ config.config_dir }}:
   file.directory:
-    - mode: 777
+    - mode: 755
     - user: {{ config.get('user','root') }}
     - group: {{ config.get('group','root') }}
 
 /var/log/cadf:
   file.directory:
-    - mode: 777
+    - mode: 755
     - user: {{ config.get('user','root') }}
     - group: {{ config.get('group','root') }}
+
+{%- endif %}
 
 {%- endif %}
 

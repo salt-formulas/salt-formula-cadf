@@ -3,8 +3,9 @@
 config:
   user: root
   group: root
-  config_dir:
-    /usr/local/share/cadf
+  config_dir: /usr/local/share/cadf
+  log_dir: /var/log/cadf
+  lock_dir: /var/lock
   pkgs:
     - python-oslo.messaging
     - python-pika
