@@ -17,7 +17,6 @@
 # under the License.
 #
 import sys
-import subprocess
 import fcntl
 import json
 import urllib2
@@ -39,8 +38,8 @@ def init_logging():
         datefmt='%Y-%m-%d %H:%M:%S')
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
-    # NOTE (msenin) delete hardcoded path to log
-    for handler in (logging.FileHandler('/var/log/cadf/cadf_dispatcher.log'),
+    
+    for handler in (logging.FileHandler(CONF.DEFAULT.log_file),
                     logging.StreamHandler()):
         handler.setFormatter(formatter)
         handler.setLevel(logging.DEBUG)
@@ -48,7 +47,15 @@ def init_logging():
 
 
 def init_config(conf_files):
-    LOG.info('Initializing configuration...')
+    # ----------------------------------------------------------------------    
+    
+    CONF.register_opts([
+        cfg.StrOpt('lock_file', required=True, help='local path to lock file')
+    ], 'DEFAULT')
+
+    CONF.register_opts([
+        cfg.StrOpt('log_file', required=True, help='local path to log file')
+    ], 'DEFAULT')
 
     # ----------------------------------------------------------------------    
 
@@ -89,15 +96,12 @@ def init_config(conf_files):
     
     CONF.log_opt_values(LOG, logging.DEBUG)
 
-    LOG.info('Configuration initialized.')
-
 
 def is_cadf_dispatcher_locked():
     LOG.info('Checking cadf dispatcher locking...')
     
     global lockfile
-    # TODO (msenin) delete hardcoded path to lock file
-    lockfile = open('/var/lock/cadf_dispatcher', 'w')
+    lockfile = open(CONF.DEFAULT.lock_file, 'w')
     
     try:
         fcntl.lockf(lockfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -105,9 +109,10 @@ def is_cadf_dispatcher_locked():
         LOG.error(
             'Cadf dispatcher is locked. There is another running instance.'
         )
-        return True
+        sys.exit(1)
+
     LOG.info('Cadf dispatcher is not locked.')
-    return False
+    return 0
 
 
 def is_http_server_available():
@@ -128,14 +133,11 @@ def is_http_server_available():
 # left as is
 def get_messages_count():
     # TODO (msenin) replace target.topic
-    LOG.info('Asking RabbitMQ about %s.info queue messages count...',
-             CONF.target.topic)
+    LOG.info('Asking RabbitMQ about %s.info queue messages count...', CONF.target.topic)
     try:
-        creds = pika.credentials.PlainCredentials(CONF.target.user, 
-                                                  CONF.target.password)
+        creds = pika.credentials.PlainCredentials(CONF.target.user, CONF.target.password)
         # connect to pica and get cound of messsages
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(
+        connection = pika.BlockingConnection(pika.ConnectionParameters(
                 CONF.target.ip,
                 CONF.target.port,
                 CONF.target.vhost,
@@ -162,18 +164,14 @@ def process_queue_messages():
     messages_count = get_messages_count()
 
     if messages_count > 0:
-        LOG.info('Messages count in %s.info queue = %s.', 
-                 CONF.target.topic, messages_count)
+        LOG.info('Messages count in %s.info queue = %s.', CONF.target.topic, messages_count)
         handler = NotificationHandler(messages_count)
-        server = oslo_messaging.get_notification_listener(
-            oslo_messaging.get_transport(CONF),
-            [oslo_messaging.Target(topic=CONF.target.topic)],
-            [handler],
-            allow_requeue=True,
-            executor='threading'
-        )             
-        LOG.info('Starting RabbitMQ listener to %s.info queue...', 
-                 CONF.target.topic)
+        server = oslo_messaging.get_notification_listener(oslo_messaging.get_transport(CONF),
+                                                          [oslo_messaging.Target(topic=CONF.target.topic)],
+                                                          [handler],
+                                                          allow_requeue=True,
+                                                          executor='threading')             
+        LOG.info('Starting RabbitMQ listener to %s.info queue...', CONF.target.topic)
         server.start()
         while handler.messages_count > 0:
             time.sleep(5)
@@ -183,8 +181,7 @@ def process_queue_messages():
         LOG.info('Waiting until the listener stops properly...')
         server.wait()
     else:
-        LOG.info('There are no messages in %s.info queue.', 
-                 CONF.target.topic)
+        LOG.info('There are no messages in %s.info queue.', CONF.target.topic)
 
 
 # left as is
@@ -204,8 +201,7 @@ class NotificationHandler(object):
                 'Accept': '*/*',
                 'User-Agent': 'keystone middleware',
                 'Content-Length': len(data)}))
-            LOG.info('Message has been removed from %s.info queue.', 
-                     CONF.target.topic)
+            LOG.info('Message has been removed from %s.info queue.', CONF.target.topic)
             return oslo_messaging.NotificationResult.HANDLED
         except (urllib2.URLError, urllib2.HTTPError) as e:
             LOG.error(e, exc_info=True)
@@ -221,12 +217,11 @@ class NotificationHandler(object):
 
 
 def main(argv):
+    init_config(argv[1:])
+
     init_logging()
 
-    if is_cadf_dispatcher_locked():
-        return 1
-
-    init_config(argv[1:])
+    is_cadf_dispatcher_locked()
 
     if not is_http_server_available():
         return 1
