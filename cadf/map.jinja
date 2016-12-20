@@ -5,6 +5,10 @@ config:
   group: root
   config_dir:
     /usr/local/share/cadf
+  log_dir:
+    /var/log/cadf
+  lock_file:
+    /var/lock/cadf_dispatcher
   pkgs:
     - python-oslo.messaging
     - python-pika
