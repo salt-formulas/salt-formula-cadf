@@ -10,6 +10,8 @@
     - mode: 644
     - user: {{ config.get('user','root') }}
     - group: {{ config.get('group','root') }}
+    - require:
+        - file : {{ config.config_dir }}
 
 {{ config.config_dir }}/cadf_dispatcher.conf:
   file.managed:
