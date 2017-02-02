@@ -11,7 +11,7 @@
     - user: {{ config.get('user','root') }}
     - group: {{ config.get('group','root') }}
     - require:
-        - file : {{ config.config_dir }}
+        - file: {{ config.config_dir }}
 
 {{ config.config_dir }}/cadf_dispatcher.conf:
   file.managed:
@@ -21,7 +21,7 @@
     - user: {{ config.get('user','root') }}
     - group: {{ config.get('group','root') }}
     - require:
-        - file : {{ config.config_dir }}
+        - file: {{ config.config_dir }}
 
 
 dispatcher_cron:
@@ -33,11 +33,14 @@ dispatcher_cron:
     - user: "{{ config.get('user','root') }}"
     - require:
       - file: {{ config.config_dir }}/cadf_dispatcher.py
+      - pkg: cadf_packages
 
 cron_path:
   cron.env_present:
     - name: PATH
     - value: "/bin:/sbin:/usr/bin:/usr/sbin"
+    - require:
+      - pkg: cadf_packages
 
 {%- else %}
 
@@ -45,6 +48,8 @@ distpatcher_cron:
   cron.absent:
     - identifier: cadf_dispatcher
     - user: "{{ config.get('user','root') }}"
+    - require:
+      - pkg: cadf_packages
 
 {% endif %}
 
