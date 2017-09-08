@@ -4,5 +4,5 @@ classes:
 - service.cadf.support
 parameters:
   cadf:
-    distpatcher:
+    dispatcher:
       enabled: true
