@@ -23,6 +23,16 @@
     - require:
         - file: {{ config.config_dir }}
 
+/etc/logrotate.d/cadf_dispatcher:
+  file.managed:
+  - source: salt://cadf/files/cadf_dispatcher_logrotate.conf
+  - template: jinja
+  - user: root
+  - group: root
+  - mode: 644
+  - require:
+    - file: {{ config.config_dir }}/cadf_dispatcher.py
+    - pkg: cadf_packages
 
 dispatcher_cron:
   cron.present:
@@ -39,15 +49,6 @@ cron_path:
   cron.env_present:
     - name: PATH
     - value: "/bin:/sbin:/usr/bin:/usr/sbin"
-    - require:
-      - pkg: cadf_packages
-
-{%- else %}
-
-distpatcher_cron:
-  cron.absent:
-    - identifier: cadf_dispatcher
-    - user: "{{ config.get('user','root') }}"
     - require:
       - pkg: cadf_packages
 
