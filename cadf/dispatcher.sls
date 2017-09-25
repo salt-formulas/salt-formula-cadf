@@ -42,14 +42,5 @@ cron_path:
     - require:
       - pkg: cadf_packages
 
-{%- else %}
-
-distpatcher_cron:
-  cron.absent:
-    - identifier: cadf_dispatcher
-    - user: "{{ config.get('user','root') }}"
-    - require:
-      - pkg: cadf_packages
-
 {% endif %}
 
