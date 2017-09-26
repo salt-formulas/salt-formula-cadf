@@ -1,0 +1,12 @@
+{%- from "cadf/map.jinja" import config with context %}
+{{ config.log_dir }}/*.log {
+  rotate 7
+  daily
+  nocreate
+  notifempty
+  missingok
+  compress
+  delaycompress
+  minsize 20M
+  maxsize 50M
+}

@@ -4,6 +4,7 @@
 include:
 - cadf.dispatcher
 - cadf.listener
+- cadf.logrotate
 
 {%- if pillar.cadf.dispatcher.enabled or pillar.cadf.listener.enabled  %}
 
