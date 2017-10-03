@@ -1,11 +1,9 @@
-{%- from "cadf/map.jinja" import config with context %}
-{%- from "cadf/map.jinja" import dispatcher with context %}
-{%- from "cadf/map.jinja" import listener with context %}
+{%- from "cadf/map.jinja" import config,dispatcher,listener with context %}
 
 {%- if dispatcher.enabled or listener.enabled  %}
 job:
   cadf:
-    - files: {{ config.log_dir }}/*.log
+    - files: {{ config.log.dir }}/*.log
       options:
         - rotate: 7
         - daily
