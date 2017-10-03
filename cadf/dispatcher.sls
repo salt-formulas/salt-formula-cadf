@@ -23,7 +23,6 @@
     - require:
         - file: {{ config.config_dir }}
 
-
 dispatcher_cron:
   cron.present:
     - name: "python {{ config.config_dir }}/cadf_dispatcher.py {{ config.config_dir }}/cadf_dispatcher.conf"
@@ -48,8 +47,6 @@ distpatcher_cron:
   cron.absent:
     - identifier: cadf_dispatcher
     - user: "{{ config.get('user','root') }}"
-    - require:
-      - pkg: cadf_packages
 
 {% endif %}
 
