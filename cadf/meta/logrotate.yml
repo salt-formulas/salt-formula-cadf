@@ -1,0 +1,19 @@
+{%- from "cadf/map.jinja" import server with context %}
+{%- from "cadf/map.jinja" import dispatcher with context %}
+{%- from "cadf/map.jinja" import listener with context %}
+
+{%- if dispatcher.enabled or listener.enabled  %}
+job:
+  cadf:
+    - files: {{ config.log_dir }}/*.log
+      options:
+        - rotate: 7
+        - daily
+        - nocreate
+        - notifempty
+        - missingok
+        - compress
+        - delaycompress
+        - minsize: 50M
+        - maxsize: 100M
+{%- endif %} 
