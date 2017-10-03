@@ -3,7 +3,7 @@
 {%- if dispatcher.enabled or listener.enabled  %}
 job:
   cadf:
-    - files: {{ config.log.dir }}/*.log
+    - files: {{ config.log_dir }}/*.log
       options:
         - rotate: 7
         - daily
