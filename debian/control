@@ -10,6 +10,6 @@ Vcs-Git: https://github.com/tcpcloud/salt-formula-cadf.git
 
 Package: salt-formula-cadf
 Architecture: all
-Depends: ${misc:Depends}, salt-master, reclass
+Depends: ${misc:Depends}
 Description: cadf salt formula
  Install and configure cadf system.
