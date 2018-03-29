@@ -1,3 +1,3 @@
 name: "cadf"
 version: "0.1"
-source: "https://github.com/tcpcloud/salt-formula-cadf"
+source: "https://github.com/salt-formulas/salt-formula-cadf"
